@@ -4,7 +4,7 @@ INSERT {{ '/* +direct */' if params.direct else '' }}INTO {{ params.target }}
     {{ params.target_columns }}
 )
 SELECT {{ params.source_columns }}
-FROM {{ params.source }}{% if params.date_column  %}
+FROM {{ params.source }}{% if params.date_column %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
     and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
 {% endif %};
@@ -20,7 +20,7 @@ DELETE = """
 BEGIN;
 DELETE {{ '/* +direct */' if params.direct else '' }}
 FROM {{ params.target }}
-{% if params.date_column  %}
+{% if params.date_column %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
     and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
 {% endif %};
@@ -69,4 +69,29 @@ ALTER {{ 'VIEW' if params.view else 'TABLE' }} {{ params.schema }}.{{ params.tab
 ALTER {{ 'VIEW' if params.view else 'TABLE' }} {{ params.schema }}.{{ params.prefix }}{{ params.table_b }}
     RENAME TO {{ params.table_b }};
 COMMIT;
+"""
+
+COUNT = """
+SELECT count(*)
+FROM {{ params.target }}
+{% if params.date_column %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
+    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+{% endif %};
+"""
+
+EQUAL_COUNT = """
+SELECT count(*)
+FROM {{ params.table_a }}
+{% if params.date_column %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
+    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+{% endif %}
+UNION
+SELECT count(*)
+FROM {{ params.table_a }}
+{% if params.date_column %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
+    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+{% endif %};
 """
