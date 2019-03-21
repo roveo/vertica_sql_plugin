@@ -1,5 +1,5 @@
 from airflow.contrib.operators.vertica_operator import VerticaOperator
-from ..sql import SWAP
+from vertica_sql_plugin.sql import SWAP
 
 
 class SwapVerticaOperator(VerticaOperator):

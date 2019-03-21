@@ -1,5 +1,5 @@
 from airflow.contrib.operators.vertica_operator import VerticaOperator
-from ..sql import RENAME
+from vertica_sql_plugin.sql import RENAME
 
 
 

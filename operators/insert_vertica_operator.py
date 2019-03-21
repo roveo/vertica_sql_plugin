@@ -1,6 +1,6 @@
 from airflow.contrib.operators.vertica_operator import VerticaOperator
 from airflow.contrib.hooks.vertica_hook import VerticaHook
-from ..sql import INSERT, GET_TABLE_COLUMNS
+from vertica_sql_plugin.sql import INSERT, GET_TABLE_COLUMNS
 
 
 class InsertVerticaOperator(VerticaOperator):

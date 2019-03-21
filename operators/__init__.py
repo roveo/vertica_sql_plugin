@@ -1,0 +1,6 @@
+from .create_table_like import CreateTableLikeVerticaOperator
+from .delete_vertica_operator import DeleteVerticaOperator
+from .insert_vertica_operator import InsertVerticaOperator
+from .rename_vertica_operator import RenameVerticaOperator
+from .swap_vertica_operator import SwapVerticaOperator
+from .truncate_vertica_operator import TruncateVerticaOperator

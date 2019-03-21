@@ -20,7 +20,7 @@ DELETE = """
 BEGIN;
 DELETE {{ '/* +direct */' if params.direct else '' }}
 FROM {{ params.target }}
-{% if params.date_column  %}{% if params.date_column  %}
+{% if params.date_column  %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
     and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
 {% endif %};
