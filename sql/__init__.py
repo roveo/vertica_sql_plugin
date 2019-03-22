@@ -1,12 +1,14 @@
 INSERT = """
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m%-%d %H:%M:%S' %}
+
 INSERT {{ '/* +direct */' if params.direct else '' }}INTO {{ params.target }}
 (
     {{ params.target_columns }}
 )
 SELECT {{ params.source_columns }}
 FROM {{ params.source }}{% if params.date_column %}
-WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
 """
 
@@ -17,12 +19,14 @@ TRUNCATE TABLE {{ params.target }};
 
 
 DELETE = """
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+
 BEGIN;
 DELETE {{ '/* +direct */' if params.direct else '' }}
 FROM {{ params.target }}
 {% if params.date_column %}
-WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
 COMMIT;
 """
@@ -72,11 +76,13 @@ COMMIT;
 """
 
 COUNT = """
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+
 SELECT count(*)
 FROM {{ params.target }}
 {% if params.date_column %}
-WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
 """
 
@@ -85,13 +91,35 @@ SELECT count(*)
 FROM {{ params.table_a }}
 {% if params.date_column %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
 {% endif %}
 UNION
 SELECT count(*)
 FROM {{ params.table_a }}
 {% if params.date_column %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    and {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
 {% endif %};
+"""
+
+ANALYZE_CONSTRAINTS = """
+SELECT analyze_constraints('{{ params.target }}');
+"""
+
+NON_UNIQUE_KEYS = """
+WITH duplicate_keys AS
+(
+    SELECT count(*)
+    FROM {{ params.target }}
+    GROUP BY {{ params.key }}
+    HAVING count(*) > 1
+)
+SELECT count(*)
+FROM duplicate_keys;
+"""
+
+COMMON_KEYS = """
+SELECT count(*)
+FROM {{ params.table_a }} 
+WHERE {{ params.key }} IN ({{ SELECT params.key }} FROM {{ params.table_b }});
 """

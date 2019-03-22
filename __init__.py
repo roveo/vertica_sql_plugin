@@ -16,6 +16,9 @@ class VerticaSqlPlugin(AirflowPlugin):
         CreateTableLikeVerticaOperator,
 
         # checks
-        CheckEmptyVerticaOperator,
-        CheckEqualCountVerticaOperator,
+        CheckResultSetEmptyVerticaOperator,
+        CheckTableEmptyVerticaOperator,
+        AnalyzeConstraintsVerticaOperator, 
+        CheckUniqueVerticaOperator,
+        CheckNoCommonKeysVerticaOperator
     ]
