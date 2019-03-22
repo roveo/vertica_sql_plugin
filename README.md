@@ -6,7 +6,7 @@ This plugin provides operators for common SQL operations in HP Vertica. You can 
 
 This set of operators covers SQL standard statements and some common operations on the database.
 
-### `InsertVerticaOperator(target, source, date_column=None, truncate_date=False, column_mapping=None, force_introspection=False, direct=False, vertica_conn_id='vertica_default')`
+### `InsertVerticaOperator`
 
 This is the workhorse of data processing. When instantiated, it tries to list the target table's columns and expects to see them in the `source`.
 
@@ -40,6 +40,10 @@ FROM source_table;
 `force_introspection` If you'd like to partially override the introspected columns, set this to `True`. The column_mapping will be then merged into the mapping resulting from introspection.
 
 `direct` Will set a Vertica `/* +direct */` hint for the INSERT statement.
+
+`vertica_conn_id` argument from the `VerticaOperator` parent class.
+
+__Don't forget your `task_id`!__
 
 ### `DeleteVerticaOperator`
 
