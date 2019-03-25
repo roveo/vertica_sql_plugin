@@ -5,7 +5,7 @@ from vertica_sql_plugin.sql import (
     COUNT,
     ANALYZE_CONSTRAINTS,
     NON_UNIQUE_KEYS,
-    COMMON_KEYS
+    KEYS
 )
 
 
@@ -29,8 +29,14 @@ class CheckResultSetEmptyVerticaOperator(VerticaOperator):
 
 class CheckTableEmptyVerticaOperator(CheckResultSetEmptyVerticaOperator):
 
-    def __init__(self, target, date_column=None, *args, **kwargs):
-        super().__init__(sql=COUNT, params=dict(target=target, date_column=date_column), *args, **kwargs)
+    def __init__(self, target, date_column=None, truncate_date=False, *args, **kwargs):
+        super().__init__(sql=COUNT,
+                         params=dict(
+                             target=target,
+                             date_column=date_column,
+                             truncate_date=truncate_date
+                         ),
+                         *args, **kwargs)
 
 
 class AnalyzeConstraintsVerticaOperator(CheckResultSetEmptyVerticaOperator):
@@ -45,7 +51,44 @@ class CheckUniqueVerticaOperator(CheckResultSetEmptyVerticaOperator):
         super().__init__(sql=NON_UNIQUE_KEYS, params=dict(target=target, key=key), *args, **kwargs)
 
 
+
+class CheckKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
+
+    def __init__(self, table_a, table_b, key='id', date_column=None, truncate_date=False, *args, **kwargs):
+        super().__init__(sql=COMMON_KEYS,
+                         params=dict(
+                             table_a=table_a,
+                             table_b=table_b,
+                             key=key,
+                             date_column=date_column,
+                             truncate_date=truncate_date
+                         ),
+                         *args, **kwargs)
+
+
 class CheckNoCommonKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
 
-    def __init__(self, table_a, table_b, key='id', *args, **kwargs):
-        super().__init__(sql=COMMON_KEYS, params=dict(table_a=table_a, table_b=table_b, key=key), *args, **kwargs)
+    def __init__(self, table_a, table_b, key='id', date_column=None, truncate_date=False, *args, **kwargs):
+        super().__init__(sql=COMMON_KEYS,
+                         params=dict(
+                             table_a=table_a,
+                             table_b=table_b,
+                             key=key,
+                             date_column=date_column,
+                             truncate_date=truncate_date
+                         ),
+                         *args, **kwargs)
+
+
+class CheckAllKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
+
+    def __init__(self, source, target, key='id', date_column=None, truncate_date=False, check='include', *args, **kwargs):
+        super().__init__(sql=KEYS_NOT_IN,
+                         params=dict(
+                             source=source,
+                             target=target,
+                             key=key,
+                             date_column=date_column,
+                             truncate_date=truncate_date
+                         ),
+                         *args, **kwargs)

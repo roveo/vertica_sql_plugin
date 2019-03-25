@@ -1,12 +1,15 @@
-INSERT = """
-{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m%-%d %H:%M:%S' %}
+from .copy import COPY
 
+
+INSERT = """
 INSERT {{ '/* +direct */' if params.direct else '' }}INTO {{ params.target }}
 (
     {{ params.target_columns }}
 )
 SELECT {{ params.source_columns }}
-FROM {{ params.source }}{% if params.date_column %}
+FROM {{ params.source }}
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m%-%d %H:%M:%S' %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
     AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
@@ -19,12 +22,11 @@ TRUNCATE TABLE {{ params.target }};
 
 
 DELETE = """
-{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
-
 BEGIN;
 DELETE {{ '/* +direct */' if params.direct else '' }}
 FROM {{ params.target }}
 {% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
     AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
@@ -76,11 +78,10 @@ COMMIT;
 """
 
 COUNT = """
-{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
-
 SELECT count(*)
 FROM {{ params.target }}
 {% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
     AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
@@ -90,15 +91,16 @@ EQUAL_COUNT = """
 SELECT count(*)
 FROM {{ params.table_a }}
 {% if params.date_column %}
-WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    AND {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %}
 UNION
 SELECT count(*)
 FROM {{ params.table_a }}
 {% if params.date_column %}
-WHERE {{ params.date_column }} >= '{{ execution_date.strftime('%Y-%m%-%d %H:%M:%S') }}'::timestamp
-    AND {{ params.date_column }} < '{{ next_execution_date.strftime('%Y-%m-%d %H:%M:%S') }}'::timestamp
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
 {% endif %};
 """
 
@@ -121,5 +123,26 @@ FROM duplicate_keys;
 COMMON_KEYS = """
 SELECT count(*)
 FROM {{ params.table_a }} 
-WHERE {{ params.key }} IN ({{ SELECT params.key }} FROM {{ params.table_b }});
+WHERE {{ params.key }} IN (SELECT {{ params.key }} FROM {{ params.table_b }});
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+AND {{ params.date_column }} < {{ next_execution_date.strftime(date_format) }}
+{% endif %};
+"""
+
+KEYS_NOT_IN = """
+SELECT count(*)
+FROM {{ params.source }}
+WHERE {{ params.key }} NOT IN (SELECT {{ params.key }} FROM {{ params.target }})
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+AND {{ params.date_column }} < {{ next_execution_date.strftime(date_format) }}
+{% endif %};
+"""
+
+KEYS = """
+SELECT count(*)
+FROM {{ params.table_a }}
+WHERE {{ params.key }}
+{{ 'NOT' if params.all_keys else '' }} IN (SELECT {{ params.key }} FROM {{ params.table_a }})
 """

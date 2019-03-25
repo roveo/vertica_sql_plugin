@@ -1,6 +1,7 @@
 from airflow.plugins_manager import AirflowPlugin
 from vertica_sql_plugin.actions import *
 from vertica_sql_plugin.checks import *
+from vertica_sql_plugin.operators import *
 
 
 class VerticaSqlPlugin(AirflowPlugin):
@@ -20,5 +21,9 @@ class VerticaSqlPlugin(AirflowPlugin):
         CheckTableEmptyVerticaOperator,
         AnalyzeConstraintsVerticaOperator, 
         CheckUniqueVerticaOperator,
-        CheckNoCommonKeysVerticaOperator
+        CheckNoCommonKeysVerticaOperator,
+
+        # operators
+        VerticaSensor,
+        ShortCircuitVerticaOperator
     ]
