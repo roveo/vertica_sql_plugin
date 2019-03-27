@@ -78,7 +78,7 @@ COMMIT;
 """
 
 COUNT = """
-SELECT count(*)
+SELECT 1
 FROM {{ params.target }}
 {% if params.date_column %}
 {% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
@@ -109,40 +109,19 @@ SELECT analyze_constraints('{{ params.target }}');
 """
 
 NON_UNIQUE_KEYS = """
-WITH duplicate_keys AS
-(
-    SELECT count(*)
-    FROM {{ params.target }}
-    GROUP BY {{ params.key }}
-    HAVING count(*) > 1
-)
-SELECT count(*)
-FROM duplicate_keys;
-"""
-
-COMMON_KEYS = """
-SELECT count(*)
-FROM {{ params.table_a }} 
-WHERE {{ params.key }} IN (SELECT {{ params.key }} FROM {{ params.table_b }});
-{% if params.date_column %}
-{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
-AND {{ params.date_column }} < {{ next_execution_date.strftime(date_format) }}
-{% endif %};
-"""
-
-KEYS_NOT_IN = """
-SELECT count(*)
-FROM {{ params.source }}
-WHERE {{ params.key }} NOT IN (SELECT {{ params.key }} FROM {{ params.target }})
-{% if params.date_column %}
-{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
-AND {{ params.date_column }} < {{ next_execution_date.strftime(date_format) }}
-{% endif %};
+SELECT 1
+FROM {{ params.target }}
+GROUP BY {{ params.key }}
+HAVING count(*) > 1;
 """
 
 KEYS = """
-SELECT count(*)
-FROM {{ params.table_a }}
+SELECT 1
+FROM {{ params.target }}
 WHERE {{ params.key }}
-{{ 'NOT' if params.all_keys else '' }} IN (SELECT {{ params.key }} FROM {{ params.table_a }})
+{{ 'NOT' if params.include else '' }} IN (SELECT {{ params.key }} FROM {{ params.check_in }})
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'
+{% endif %};
 """

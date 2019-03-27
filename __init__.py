@@ -22,6 +22,7 @@ class VerticaSqlPlugin(AirflowPlugin):
         AnalyzeConstraintsVerticaOperator, 
         CheckUniqueVerticaOperator,
         CheckNoCommonKeysVerticaOperator,
+        CheckAllKeysVerticaOperator,
 
         # operators
         VerticaSensor,
