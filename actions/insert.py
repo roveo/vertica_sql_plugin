@@ -4,6 +4,40 @@ from vertica_sql_plugin.sql import INSERT, GET_TABLE_COLUMNS
 
 
 class InsertVerticaOperator(VerticaOperator):
+    r"""Inserts data from source table or view into target table.
+
+    Args:
+        source (str): Source table or view.
+        target (str): Target table.
+
+        date_column (str): Defaults to ``None``. If provided, the source will be additionally filtered on this column
+            to be ``>= execution_date and < next_execution_date``.
+
+        truncate_date (bool): Defaults to ``None``.
+
+            If true, ``execution_date`` will be truncated to date. This is useful when your ``start_date`` is in the morning
+            but the processed data should be between 00:00 and 00:00 next day.
+
+        direct (bool): Defaults to ``False``.
+
+            Will add a ``/* +direct */`` Vertica directive to the INSERT statement.
+
+        column_mapping (dict): Defaults to ``None``.
+
+            A mapping from target to source columns. If provided, the operator won't run database introspection
+            to infer these automatically, so only mapped columns will be inserted.
+
+        force_introspection (bool): Defaults to ``False``.
+
+            If provided together with ``column_mapping``, will force the database introspection anyway and merge
+            the user-provided mapping into the result of introspection. Use this when most column names in source
+            and target are the same, but some aren't.
+
+        exclude (list): Defaults to ``None``.
+
+            List of columns to not select from the source. Use this for columns created with a ``default`` option.
+
+    """
 
     def __init__(self, source, target, date_column=None, truncate_date=False,
                 direct=False, column_mapping=None, force_introspection=False, exclude=None, *args, **kwargs):
