@@ -12,6 +12,8 @@ from vertica_sql_plugin.sql import (
 
 
 class CheckResultSetEmptyVerticaOperator(VerticaOperator):
+    """abcs
+    """
 
     def __init__(self, reverse=False, *args, **kwargs):
         self.reverse = reverse
@@ -34,6 +36,8 @@ class CheckResultSetEmptyVerticaOperator(VerticaOperator):
 
 
 class CheckTableEmptyVerticaOperator(CheckResultSetEmptyVerticaOperator):
+    """asdfsad
+    """
 
     def __init__(self, target, date_column=None, truncate_date=False, *args, **kwargs):
         super().__init__(sql=COUNT,
@@ -46,18 +50,24 @@ class CheckTableEmptyVerticaOperator(CheckResultSetEmptyVerticaOperator):
 
 
 class AnalyzeConstraintsVerticaOperator(CheckResultSetEmptyVerticaOperator):
+    """asdfasd
+    """
 
     def __init__(self, target='', *args, **kwargs):
         super().__init__(sql=ANALYZE_CONSTRAINTS, params=dict(target=target), *args, **kwargs)
 
 
 class CheckUniqueVerticaOperator(CheckResultSetEmptyVerticaOperator):
+    """asdfsadf
+    """
 
     def __init__(self, target, key='id', *args, **kwargs):
         super().__init__(sql=NON_UNIQUE_KEYS, params=dict(target=target, key=key), *args, **kwargs)
 
 
 class CheckNoCommonKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
+    """sadfsadf
+    """
 
     def __init__(self, target, check_in, key='id', date_column=None, truncate_date=False, *args, **kwargs):
         super().__init__(sql=KEYS,
@@ -73,6 +83,8 @@ class CheckNoCommonKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
 
 
 class CheckAllKeysVerticaOperator(CheckResultSetEmptyVerticaOperator):
+    """asdfs nblkn
+    """
 
     def __init__(self, target, check_in, key='id', date_column=None, truncate_date=False, *args, **kwargs):
         super().__init__(sql=KEYS,

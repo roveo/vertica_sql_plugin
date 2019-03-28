@@ -6,17 +6,27 @@ from vertica_sql_plugin.sql import INSERT, GET_TABLE_COLUMNS
 class InsertVerticaOperator(VerticaOperator):
     r"""Inserts data from source table or view into target table.
 
-    Args:
-        source (str): Source table or view.
-        target (str): Target table.
+    If ``column_mapping`` is not provided by the user, it will run an inspection on the target table to list it's
+    columns. Column names are expected to be the same in the source. Note that the inspection is run when the DAG
+    is created, not when it's run, so be aware of how much strain it puts on the database.
 
-        date_column (str): Defaults to ``None``. If provided, the source will be additionally filtered on this column
+    Args:
+        task_id: Task ID for Airflow Operator.
+        vertica_conn_id: Connection ID for Vertica.
+
+        source: Source table or view.
+        target: Target table.
+
+        date_column: Defaults to ``None``.
+
+            If provided, the source will be additionally filtered on this column
             to be ``>= execution_date and < next_execution_date``.
 
         truncate_date (bool): Defaults to ``None``.
 
-            If true, ``execution_date`` will be truncated to date. This is useful when your ``start_date`` is in the morning
-            but the processed data should be between 00:00 and 00:00 next day.
+            If True, ``execution_date`` will be truncated to date.
+            This is useful when your ``start_date`` is in the morning but the processed data
+            should be between 00:00 and 00:00 next day.
 
         direct (bool): Defaults to ``False``.
 

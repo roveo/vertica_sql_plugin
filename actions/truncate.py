@@ -6,19 +6,15 @@ class TruncateVerticaOperator(VerticaOperator):
     """Truncates a table.
 
     Args:
+        task_id: Task ID for Airflow Operator.
+        vertica_conn_id: Connection ID for Vertica.
+
         target: Table to truncate.
-        vertica_conn_id: Airflow connection ID.
 
     Note:
         For large tables, better use ``DeleteVerticaOperator`` with ``direct=True``.
     """
 
     def __init__(self, target, *args, **kwargs):
-        """
-        Args:
-            target:
-            *args:
-            **kwargs:
-        """
         params = dict(target=target)
         super().__init__(sql=TRUNCATE, params=params, *args, **kwargs)

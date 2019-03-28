@@ -3,16 +3,19 @@ from vertica_sql_plugin.sql import DELETE
 
 
 class DeleteVerticaOperator(VerticaOperator):
+    """Deletes rows from target table.
+
+    Args:
+        task_id: Task ID for Airflow Operator.
+        vertica_conn_id: Connection ID for Vertica.
+
+        target: Table to delete the rows from.
+        date_column: Defaults to ``None``.
+
+            If provided, the ``DELETE`` statement will have a ``WHERE`` clause that's
+            ``>= execution_date AND < next_execution_date``.
+    """
 
     def __init__(self, target, date_column=None, truncate_date=False, direct=False, *args, **kwargs):
-        """
-        Args:
-            target:
-            date_column:
-            truncate_date:
-            direct:
-            *args:
-            **kwargs:
-        """
         params = dict(target=target, date_column=date_column, truncate_date=truncate_date, direct=direct)
         super().__init__(sql=DELETE, params=params, *args, **kwargs)
