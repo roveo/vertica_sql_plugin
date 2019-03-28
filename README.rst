@@ -38,9 +38,11 @@ Basic SQL Actions
    Truncates a table.
 
    :Parameters:
-      * **target** – Table to truncate.
+      * **task_id** – Task ID for Airflow Operator.
 
-      * **vertica_conn_id** – Airflow connection ID.
+      * **vertica_conn_id** – Connection ID for Vertica.
+
+      * **target** – Table to truncate.
 
    Note: For large tables, better use ``DeleteVerticaOperator`` with
       ``direct=True``.
@@ -49,6 +51,68 @@ Basic SQL Actions
 date_column=None, truncate_date=False, direct=False, *args,
 **kwargs)**
 
+   Deletes rows from target table.
+
+   :Parameters:
+      * **task_id** – Task ID for Airflow Operator.
+
+      * **vertica_conn_id** – Connection ID for Vertica.
+
+      * **target** – Table to delete the rows from.
+
+      * **date_column** –
+
+         Defaults to ``None``.
+
+         If provided, the ``DELETE`` statement will have a ``WHERE``
+         clause that’s ``>= execution_date AND <
+         next_execution_date``.
+
+**class vertica_sql_plugin.CreateTableLikeVerticaOperator(target,
+source, projections=False, *args, **kwargs)**
+
+   Creates a new empty table that’s a copy of an existing one.
+
+   :Parameters:
+      * **task_id** – Task ID for Airflow Operator.
+
+      * **vertica_conn_id** – Connection ID for Vertica.
+
+      * **target** – Which table to create.
+
+      * **source** – Which table to use as source.
+
+      * **projections** (*bool*) –
+
+         Defaults to ``False``.
+
+         Whether to include Vertica ``INCLUDING PROJECTIONS``
+         directive.
+
+**class vertica_sql_plugin.SwapVerticaOperator(schema, table_a,
+table_b, view=False, prefix='__airflow_swap__', *args, **kwargs)**
+
+   Swaps table_a with table_b, works only inside the same schema.
+
+   :Parameters:
+      * **task_id** – Task ID for Airflow Operator.
+
+      * **vertica_conn_id** – Connection ID for Vertica.
+
+      * **schema** – Schema name.
+
+      * **table_a** – Table to swap.
+
+      * **table_b** – Table to swap table_a with.
+
+      * **view** – Swap views and not tables.
+
+      * **prefix** –
+
+         Defaults to ``'__airflow_swap__'``.
+
+         Prefix to use when creating intermediary table.
+
 **class vertica_sql_plugin.InsertVerticaOperator(source, target,
 date_column=None, truncate_date=False, direct=False,
 column_mapping=None, force_introspection=False, exclude=None, *args,
@@ -56,20 +120,33 @@ column_mapping=None, force_introspection=False, exclude=None, *args,
 
    Inserts data from source table or view into target table.
 
+   If ``column_mapping`` is not provided by the user, it will run an
+   inspection on the target table to list it’s columns. Column names
+   are expected to be the same in the source. Note that the inspection
+   is run when the DAG is created, not when it’s run, so be aware of
+   how much strain it puts on the database.
+
    :Parameters:
-      * **source** (*str*) – Source table or view.
+      * **task_id** – Task ID for Airflow Operator.
 
-      * **target** (*str*) – Target table.
+      * **vertica_conn_id** – Connection ID for Vertica.
 
-      * **date_column** (*str*) – Defaults to ``None``. If provided,
-         the source will be additionally filtered on this column to be
-         ``>= execution_date and < next_execution_date``.
+      * **source** – Source table or view.
+
+      * **target** – Target table.
+
+      * **date_column** –
+
+         Defaults to ``None``.
+
+         If provided, the source will be additionally filtered on this
+         column to be ``>= execution_date and < next_execution_date``.
 
       * **truncate_date** (*bool*) –
 
          Defaults to ``None``.
 
-         If true, ``execution_date`` will be truncated to date. This
+         If True, ``execution_date`` will be truncated to date. This
          is useful when your ``start_date`` is in the morning but the
          processed data should be between 00:00 and 00:00 next day.
 
