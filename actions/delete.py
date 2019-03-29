@@ -14,6 +14,15 @@ class DeleteVerticaOperator(VerticaOperator):
 
             If provided, the ``DELETE`` statement will have a ``WHERE`` clause that's
             ``>= execution_date AND < next_execution_date``.
+
+        truncate_date: Defaults to ``False``.
+
+            If ``True``, will truncate ``execution_date`` to date. Useful when processing whole days of data regardless
+            if actual DAG ``start_date``.
+
+        direct: Defaults to ``False``.
+
+            If, ``True``, sets a ``/* +direct */`` Vertica directive for the ``DELETE`` statement.
     """
 
     def __init__(self, target, date_column=None, truncate_date=False, direct=False, *args, **kwargs):

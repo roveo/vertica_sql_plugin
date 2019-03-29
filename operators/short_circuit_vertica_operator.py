@@ -1,7 +1,6 @@
 from airflow.contrib.operators.vertica_operator import VerticaOperator
 from airflow.contrib.hooks.vertica_hook import VerticaHook
 from airflow.models import SkipMixin
-from airflow.exceptions import AirflowException
 
 
 class ShortCircuitVerticaOperator(VerticaOperator, SkipMixin):
