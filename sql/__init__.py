@@ -2,7 +2,7 @@ from .copy import COPY
 
 
 INSERT = """
-INSERT {{ '/* +direct */' if params.direct else '' }}INTO {{ params.target }}
+INSERT {{ '/* +direct */' if params.direct else '' }} INTO {{ params.target }}
 (
     {{ params.target_columns }}
 )

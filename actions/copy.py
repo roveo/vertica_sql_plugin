@@ -3,6 +3,7 @@ from airflow.contrib.hooks.vertica_hook import VerticaHook
 from vertica_sql_plugin.sql import COPY
 
 
+
 class CopyFromStdinVerticaOperator(VerticaOperator):
     """Copies CSV into Vertica from a file-like object.
 
@@ -15,10 +16,10 @@ class CopyFromStdinVerticaOperator(VerticaOperator):
 
         sql: Optional SQL query to override the default.
         delimiter: Defaults to ``','``. CSV delimiter.
-        skip: Default: 0. Vertica ``COPY` statement option.
-        direct: Default: False. Vertica ``COPY` statement option.
-        trailing_nullcols: Default: ``False``. Vertica ``COPY` statement option.
-        enforcelength: Default: ``True``. Vertica ``COPY` statement option.
+        skip: Default: 0. Vertica ``COPY`` statement option.
+        direct: Default: False. Vertica ``COPY`` statement option.
+        trailing_nullcols: Default: ``False``. Vertica ``COPY`` statement option.
+        enforcelength: Default: ``True``. Vertica ``COPY`` statement option.
     """
 
     def __init__(self, target, source, sql=None, delimiter=',', skip=0, direct=False, trailing_nullcols=False,

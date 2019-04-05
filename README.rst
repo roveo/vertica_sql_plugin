@@ -196,3 +196,35 @@ column_mapping=None, force_introspection=False, exclude=None, *args,
 
          List of columns to not select from the source. Use this for
          columns created with a ``default`` option.
+
+**class vertica_sql_plugin.CopyFromStdinVerticaOperator(target,
+source, sql=None, delimiter=', ', skip=0, direct=False,
+trailing_nullcols=False, enforcelength=True, abort_on_error=True,
+compression='', parser='', *args, **kwargs)**
+
+   Copies CSV into Vertica from a file-like object.
+
+   Use this for simple copying of csv data without saving the data on
+   disk, for example, you can steam a file directly from a http source
+   with the ``requests`` library.
+
+   :Parameters:
+      * **target** – Table to copy to.
+
+      * **source** – Callable that will return an object with a
+         ``.read()`` method.
+
+      * **sql** – Optional SQL query to override the default.
+
+      * **delimiter** – Defaults to ``','``. CSV delimiter.
+
+      * **skip** – Default: 0. Vertica ``COPY`` statement option.
+
+      * **direct** – Default: False. Vertica ``COPY`` statement
+         option.
+
+      * **trailing_nullcols** – Default: ``False``. Vertica ``COPY``
+         statement option.
+
+      * **enforcelength** – Default: ``True``. Vertica ``COPY``
+         statement option.

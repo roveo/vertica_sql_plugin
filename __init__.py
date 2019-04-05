@@ -15,6 +15,7 @@ class VerticaSqlPlugin(AirflowPlugin):
         RenameVerticaOperator,
         SwapVerticaOperator,
         CreateTableLikeVerticaOperator,
+        CopyFromStdinVerticaOperator,
 
         # checks
         CheckResultSetEmptyVerticaOperator,
