@@ -53,7 +53,7 @@ class AnalyzeConstraintsVerticaOperator(CheckResultSetEmptyVerticaOperator):
     """asdfasd
     """
 
-    def __init__(self, target='', *args, **kwargs):
+    def __init__(self, target, *args, **kwargs):
         super().__init__(sql=ANALYZE_CONSTRAINTS, params=dict(target=target), *args, **kwargs)
 
 
