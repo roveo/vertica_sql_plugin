@@ -84,7 +84,8 @@ FROM {{ params.target }}
 {% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
 WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
     AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
-{% endif %};
+{% endif %}
+LIMIT 10;
 """
 
 EQUAL_COUNT = """
@@ -112,7 +113,8 @@ NON_UNIQUE_KEYS = """
 SELECT 1
 FROM {{ params.target }}
 GROUP BY {{ params.key }}
-HAVING count(*) > 1;
+HAVING count(*) > 1
+LIMIT 10;
 """
 
 KEYS = """
@@ -123,5 +125,6 @@ WHERE {{ params.key }}
 {% if params.date_column %}
 {% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
 AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'
-{% endif %};
+{% endif %}
+LIMIT 10;
 """
