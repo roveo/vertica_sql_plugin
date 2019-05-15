@@ -13,7 +13,7 @@ class ShortCircuitVerticaOperator(VerticaOperator, SkipMixin):
         self.log.info(f'Running SQL query {self.sql}')
         hook = VerticaHook(vertica_conn_id=self.vertica_conn_id)
         result_set = hook.get_records(self.sql)
-        condition = self.test(result_set)
+        condition = self.test(result_set, context=context)
 
         if condition:
             self.log.info('Proceeding with downstream tasks...')

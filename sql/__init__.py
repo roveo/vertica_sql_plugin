@@ -128,3 +128,29 @@ AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'
 {% endif %}
 LIMIT 10;
 """
+
+DELETE_INSERT = """
+BEGIN;
+
+DELETE {{ '/* +direct */' if params.direct else '' }}
+FROM {{ params.target }}
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m-%d %H:%M:%S' %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
+{% endif %};
+
+INSERT {{ '/* +direct */' if params.direct else '' }} INTO {{ params.target }}
+(
+    {{ params.target_columns }}
+)
+SELECT {{ params.source_columns }}
+FROM {{ params.source }}
+{% if params.date_column %}
+{% set date_format = '%Y-%m-%d' if params.truncate_date else '%Y-%m%-%d %H:%M:%S' %}
+WHERE {{ params.date_column }} >= '{{ execution_date.strftime(date_format) }}'::timestamp
+    AND {{ params.date_column }} < '{{ next_execution_date.strftime(date_format) }}'::timestamp
+{% endif %};
+
+COMMIT;
+"""

@@ -46,11 +46,10 @@ class InsertVerticaOperator(VerticaOperator):
         exclude (list): Defaults to ``None``.
 
             List of columns to not select from the source. Use this for columns created with a ``default`` option.
-
     """
 
     def __init__(self, source, target, date_column=None, truncate_date=False,
-                direct=False, column_mapping=None, force_introspection=False, exclude=None, *args, **kwargs):
+                 direct=False, column_mapping=None, force_introspection=False, exclude=None, sql=None, *args, **kwargs):
         if column_mapping is None or force_introspection:
             exclude = exclude or []
             vertica_conn_id = kwargs.get('vertica_conn_id', 'vertica_default')
@@ -60,6 +59,7 @@ class InsertVerticaOperator(VerticaOperator):
         column_mapping = column_mapping or {}
         columns.update(column_mapping)
         source_columns, target_columns = list(zip(*columns.items()))
+        _sql = sql or INSERT
         params = dict(source=source, target=target, date_column=date_column, truncate_date=truncate_date, direct=direct,
                       source_columns=', '.join(source_columns), target_columns=', '.join(target_columns))
-        super().__init__(sql=INSERT, params=params, *args, **kwargs)
+        super().__init__(sql=_sql, params=params, *args, **kwargs)

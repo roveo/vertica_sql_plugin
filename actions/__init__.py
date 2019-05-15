@@ -5,3 +5,4 @@ from .rename import RenameVerticaOperator
 from .swap import SwapVerticaOperator
 from .truncate import TruncateVerticaOperator
 from .copy import CopyFromStdinVerticaOperator
+from .delete_insert import DeleteInsertVerticaOperator
