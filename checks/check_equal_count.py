@@ -12,14 +12,14 @@ class CheckEqualCountVerticaOperator(VerticaOperator):
         super().__init__(sql=EQUAL_COUNT, params=params *args, **kwargs)
     
     def execute(self, context=None):
-        self.log.info(f'Executing SQL: %s', self.sql)
+        self.log.info('Executing SQL: {}'.format(self.sql))
         hook = VerticaHook(vertica_conn_id=self.vertica_conn_id)
         records = len(hook.get_records(self.sql))
-        self.log.info(f'Returned rows: {records}')
+        self.log.info('Returned rows: {}'.format(records))
         if records == 2 and not self.reverse:
             raise AirflowException('Row counts are not equal')
         elif records == 1 and self.reverse:
             raise AirflowException('Row counts are equal')
         elif records not in (1, 2):
-            raise AirflowException(f'Expected 1 or 2 rows, got {records}')
+            raise AirflowException('Expected 1 or 2 rows, got {}'.format(records))
         self.log.info('Success!')

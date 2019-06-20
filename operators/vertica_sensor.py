@@ -5,7 +5,7 @@ from airflow.contrib.hooks.vertica_hook import VerticaHook
 class VerticaSensor(BaseSensorOperator):
 
     def __init__(self, vertica_conn_id='vertica_default',
-                 checker=lambda: True,
+                 checker=lambda x: True,
                  sql='select 1',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -14,7 +14,7 @@ class VerticaSensor(BaseSensorOperator):
         self.sql = sql
 
     def poke(self, context):
-        self.log.info(f'Poking: {self.sql}')
+        self.log.info('Poking: {}'.format(self.sql))
         try:
             response = self.hook.get_records(self.sql)
             return self.checker(response)

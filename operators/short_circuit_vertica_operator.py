@@ -10,7 +10,7 @@ class ShortCircuitVerticaOperator(VerticaOperator, SkipMixin):
         super(ShortCircuitVerticaOperator, self).__init__(*args, **kwargs)
 
     def execute(self, context):
-        self.log.info(f'Running SQL query {self.sql}')
+        self.log.info('Running SQL query {}'.format(self.sql))
         hook = VerticaHook(vertica_conn_id=self.vertica_conn_id)
         result_set = hook.get_records(self.sql)
         condition = self.test(result_set, context=context)

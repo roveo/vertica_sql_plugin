@@ -55,7 +55,7 @@ class InsertVerticaOperator(VerticaOperator):
             vertica_conn_id = kwargs.get('vertica_conn_id', 'vertica_default')
             hook = VerticaHook(vertica_conn_id=vertica_conn_id)
             columns = {c: c for (c,) in hook.get_records(GET_TABLE_COLUMNS, dict(table=target)) if c not in exclude}
-            self.log.debug(f'Target columns discovered: {list(columns)}')
+            self.log.debug('Target columns discovered: {}'.format(list(columns)))
         column_mapping = column_mapping or {}
         columns.update(column_mapping)
         source_columns, target_columns = list(zip(*columns.items()))

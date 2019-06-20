@@ -21,7 +21,7 @@ class CheckResultSetEmptyVerticaOperator(VerticaOperator):
     
     def execute(self, context=None):
         hook = VerticaHook(vertica_conn_id=self.vertica_conn_id)
-        self.log.info(f'Executing SQL: {self.sql}')
+        self.log.info('Executing SQL: {}'.format(self.sql))
         with closing(hook.get_conn()) as conn:
             with closing(conn.cursor()) as cur:
                 res = cur.execute(self.sql)
