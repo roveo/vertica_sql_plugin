@@ -2,6 +2,10 @@ from airflow.contrib.operators.vertica_operator import VerticaOperator
 from airflow.contrib.hooks.vertica_hook import VerticaHook
 from vertica_sql_plugin.sql import COPY
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class CopyFromStdinVerticaOperator(VerticaOperator):
@@ -38,4 +42,5 @@ class CopyFromStdinVerticaOperator(VerticaOperator):
         hook = VerticaHook(vertica_conn_id=self.vertica_conn_id)
         with hook.get_conn() as conn:
             with conn.cursor() as cur:
+                logging.info(self.sql)
                 cur.copy(self.sql, self.source(**context))
